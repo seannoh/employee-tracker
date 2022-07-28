@@ -7,16 +7,45 @@ import connect from "./utils/connect.js";
 
 // FUNCTION DEFINITIONS
 
+// Initiate app
 async function init() {
   await connect();
-  
-  fs.readFile("./utils/welcomeASCII.txt","utf-8", (err, data) => {
-    if(err) throw err;
-    console.log(data);
-  })
 
+  const ascii = fs.readFileSync("./utils/welcomeASCII.txt","utf-8");
+  console.log(ascii);
 
 }
+
+// Prompt user choices
+
+
+// View all departments
+
+// View all roles
+
+// View all employees
+
+// View employees by department
+
+// View employees by manager
+
+// Add a department
+
+// Add a role
+
+// Add a employee
+
+// Update an employee's role
+
+// Update an employee's mangaer
+
+// Delete a department
+
+// Delete a role
+
+// Delete an employee
+
+// View department budget
 
 
 // FUNCTION CALLS
