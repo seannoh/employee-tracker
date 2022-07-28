@@ -383,9 +383,45 @@ async function updateEmployeeRole() {
 
 // Update an employee's manager
 async function updateEmployeeMngr() {
-  // stub
+  try {
+    const empQueryString = "SELECT e.id, r.title, CONCAT(e.first_name,' ',e.last_name) AS name FROM employee e LEFT JOIN role r ON e.role_id = r.id";
+    const empData = await connection.query(empQueryString);
+    const empArray = empData[0].map((emp) => {return {name: `${emp.name} (${emp.title})`, value: emp.id}});
 
-  prompt();
+    const {employee_id} = await inquirer.prompt(
+      {
+        name: "employee_id",
+        type: "list",
+        message: "Please select an employee to modify:",
+        choices: empArray,
+        pageSize: 7,
+        loop: false
+      },
+    );
+
+    const mngrArray = empArray.filter((emp) => {
+      return (emp.value !== employee_id);
+    });
+    mngrArray.unshift({name: "No Manager", value: null})
+
+    const {mngr_id} = await inquirer.prompt(
+      {
+        name: "mngr_id",
+        type: "list",
+        message: "Please select a new manager for this employee:",
+        choices: mngrArray,
+        pageSize: 7,
+        loop: false
+      }
+    );
+    const updateQueryString = "UPDATE employee SET manager_id = ? WHERE id = ?";
+    const data = await connection.query(updateQueryString, [mngr_id, employee_id]);
+    console.log("Employee's manager has been updated");
+    prompt();
+  }
+  catch(err) {
+    throw err;
+  }
 }
 
 // Delete a department
