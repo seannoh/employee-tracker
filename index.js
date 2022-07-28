@@ -36,7 +36,7 @@ async function prompt() {
                 new inquirer.Separator(),
                 "Add a department",
                 "Add a role",
-                "Add a employee",
+                "Add an employee",
                 new inquirer.Separator(),
                 "Update an employee's role",
                 "Update an employee's manager",
@@ -76,7 +76,7 @@ async function prompt() {
     case "Add a role":
       addRole();
       break;
-    case "Add a employee":
+    case "Add an employee":
       addEmployee();
       break;
     case "Update an employee's role":
@@ -170,7 +170,9 @@ async function viewEmployeesByDept() {
         name: "department_id",
         type: "list",
         message: "Select a department:",
-        choices: departmentsArray
+        choices: departmentsArray,
+        pageSize: 7,
+        loop: false
       }
     );
     
@@ -205,7 +207,9 @@ async function viewEmployeesByMngr() {
         name: "mngr_id",
         type: "list",
         message: "Select a manager:",
-        choices: mngrArray
+        choices: mngrArray,
+        pageSize: 7,
+        loop: false
       }
     );
     
@@ -271,7 +275,9 @@ async function addRole() {
         name: "dept",
         type: "list",
         message: "Please select a department to add the role to:",
-        choices: departmentsArray
+        choices: departmentsArray,
+        pageSize: 7,
+        loop: false
       }
     ]);
     const queryString = "INSERT INTO role(title, salary, department_id) VALUE (?, ?, ?)";
@@ -284,11 +290,54 @@ async function addRole() {
   }
 }
 
-// Add a employee
+// Add an employee
 async function addEmployee() {
-  // stub
+  try {
+    const roleQueryString = "SELECT * FROM role";
+    const roleData = await connection.query(roleQueryString);
+    const roleArray = roleData[0].map((role) => {return {name: role.title, value: role.id}});
 
-  prompt();
+    const mngrQueryString = "SELECT e.id, r.title, CONCAT(e.first_name,' ',e.last_name) AS name FROM employee e LEFT JOIN role r ON e.role_id = r.id";
+    const mngrData = await connection.query(mngrQueryString);
+    const mngrArray = mngrData[0].map((mngr) => {return {name: `${mngr.name} (${mngr.title})`, value: mngr.id}});
+    mngrArray.unshift({name: "No Manager", value: null})
+  
+    const {first_name, last_name, role, manager_id} = await inquirer.prompt([
+      {
+        name: "first_name",
+        type: "input",
+        message: "Please enter the first name of the employee:"
+      },
+      {
+        name: "last_name",
+        type: "input",
+        message: "Please enter the last name of the employee:"
+      },
+      {
+        name: "role",
+        type: "list",
+        message: "Please select a role for the employee:",
+        choices: roleArray,
+        pageSize: 7,
+        loop: false
+      },
+      {
+        name: "manager_id",
+        type: "list",
+        message: "Please select a manager for the employee:",
+        choices: mngrArray,
+        pageSize: 7,
+        loop: false
+      }
+    ]);
+    const queryString = "INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUE (?, ?, ?, ?)";
+    const data = await connection.query(queryString, [first_name, last_name, role, manager_id]);
+    console.log(`${first_name} ${last_name} employee added`);
+    prompt();
+  } 
+  catch(err) {
+    throw err;
+  }
 }
 
 // Update an employee's role
