@@ -125,7 +125,16 @@ async function viewDepartments() {
 
 // View all roles
 async function viewRoles() {
-  
+  const queryString = `SELECT r.id AS 'ID', r.title AS 'Title', r.salary AS 'Salary', d.name AS 'Department Name' FROM role r 
+                       JOIN department d ON r.department_id = d.id`;
+  try {
+    const data = await connection.query(queryString);
+    console.table(data[0])
+    prompt();
+  } 
+  catch(err) {
+    throw err;
+  }
 }
 
 // View all employees
