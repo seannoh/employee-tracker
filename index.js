@@ -251,9 +251,37 @@ async function addDepartment() {
 
 // Add a role
 async function addRole() {
-  // stub
-
-  prompt();
+  try {
+    const deptQueryString = "SELECT * FROM department";
+    const deptData = await connection.query(deptQueryString);
+    const departmentsArray = deptData[0].map((dept) => {return {name: dept.name, value: dept.id}});
+  
+    const {title, salary, dept} = await inquirer.prompt([
+      {
+        name: "title",
+        type: "input",
+        message: "Please enter the name of the role to add:"
+      },
+      {
+        name: "salary",
+        type: "input",
+        message: "Please enter the salary of the role to add:"
+      },
+      {
+        name: "dept",
+        type: "list",
+        message: "Please select a department to add the role to:",
+        choices: departmentsArray
+      }
+    ]);
+    const queryString = "INSERT INTO role(title, salary, department_id) VALUE (?, ?, ?)";
+    const data = await connection.query(queryString, [title, salary, dept]);
+    console.log(`${title} role added`);
+    prompt();
+  } 
+  catch(err) {
+    throw err;
+  }
 }
 
 // Add a employee
