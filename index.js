@@ -426,9 +426,30 @@ async function updateEmployeeMngr() {
 
 // Delete a department
 async function deleteDepartment() {
-  // stub
+  try {
+    const deptQueryString = "SELECT * FROM department";
+    const deptData = await connection.query(deptQueryString);
+    const deptArray = deptData[0].map((dept) => {return {name: dept.name, value: dept.id}});
 
-  prompt();
+    const {department_id} = await inquirer.prompt(
+      {
+        name: "department_id",
+        type: "list",
+        message: "Please select a department to delete:",
+        choices: deptArray,
+        pageSize: 7,
+        loop: false
+      }
+    );
+
+    const deleteQueryString = "DELETE FROM department WHERE id = ?";
+    const data = await connection.query(deleteQueryString, department_id);
+    console.log("Department has been deleted");
+    prompt();
+  }
+  catch(err) {
+    throw err;
+  }
 }
 
 // Delete a role
