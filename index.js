@@ -196,9 +196,37 @@ async function viewEmployeesByDept() {
 
 // View employees by manager
 async function viewEmployeesByMngr() {
-  // stub
-
-  prompt();
+  try {
+    const mngrQueryString = "SELECT e.id, CONCAT(e.first_name,' ',e.last_name) AS name FROM employee e WHERE e.manager_id IS NULL";
+    const mngrData = await connection.query(mngrQueryString);
+    const mngrArray = mngrData[0].map((mngr) => {return {name: mngr.name, value: mngr.id}});
+    const {mngr_id} = await inquirer.prompt(
+      {
+        name: "mngr_id",
+        type: "list",
+        message: "Select a manager:",
+        choices: mngrArray
+      }
+    );
+    
+    const empQueryString = `SELECT e.id AS 'ID', 
+                         CONCAT(e.first_name,' ',e.last_name) AS 'Employee Name',  
+                         r.title AS 'Role', 
+                         d.name AS 'Department', 
+                         r.salary AS 'Salary', 
+                         IFNULL(CONCAT(m.first_name,' ',m.last_name),'No Manager') AS 'Manager'
+    FROM employee e 
+    LEFT JOIN employee m ON e.manager_id = m.id
+    JOIN role r ON e.role_id = r.id 
+    JOIN department d ON r.department_id = d.id
+    WHERE e.manager_id = ?`;
+    const empData = await connection.query(empQueryString, mngr_id);
+    console.table(empData[0])
+    prompt();
+  } 
+  catch(err) {
+    throw err;
+  }
 }
 
 // Add a department
