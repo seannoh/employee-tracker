@@ -47,6 +47,8 @@ async function connect() {
       throw err;
     }
   });
+
+  return db;
 }
 
 
