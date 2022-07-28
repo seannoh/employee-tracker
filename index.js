@@ -231,9 +231,22 @@ async function viewEmployeesByMngr() {
 
 // Add a department
 async function addDepartment() {
-  // stub
-
-  prompt();
+  const {deptName} = await inquirer.prompt(
+    {
+      name: "deptName",
+      type: "input",
+      message: "Please enter the name of the department to add:"
+    }
+  );
+  const queryString = "INSERT INTO department(name) VALUE (?)";
+  try {
+    const data = await connection.query(queryString, deptName);
+    console.log(`${deptName} department added`);
+    prompt();
+  } 
+  catch(err) {
+    throw err;
+  }
 }
 
 // Add a role
