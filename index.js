@@ -342,9 +342,43 @@ async function addEmployee() {
 
 // Update an employee's role
 async function updateEmployeeRole() {
-  // stub
+  try {
+    const empQueryString = "SELECT e.id, r.title, CONCAT(e.first_name,' ',e.last_name) AS name FROM employee e LEFT JOIN role r ON e.role_id = r.id";
+    const empData = await connection.query(empQueryString);
+    const empArray = empData[0].map((emp) => {return {name: `${emp.name} (${emp.title})`, value: emp.id}});
 
-  prompt();
+    const roleQueryString = "SELECT * FROM role";
+    const roleData = await connection.query(roleQueryString);
+    const roleArray = roleData[0].map((role) => {return {name: role.title, value: role.id}});
+
+    const {employee_id, role_id} = await inquirer.prompt([
+      {
+        name: "employee_id",
+        type: "list",
+        message: "Please select an employee to modify:",
+        choices: empArray,
+        pageSize: 7,
+        loop: false
+      },
+      {
+        name: "role_id",
+        type: "list",
+        message: "Please select a new role for this employee:",
+        choices: roleArray,
+        pageSize: 7,
+        loop: false
+      }
+    ]
+    );
+
+    const updateQueryString = "UPDATE employee SET role_id = ? WHERE id = ?";
+    const data = await connection.query(updateQueryString, [role_id, employee_id]);
+    console.log("Employee's role has been updated");
+    prompt();
+  }
+  catch(err) {
+    throw err;
+  }
 }
 
 // Update an employee's manager
