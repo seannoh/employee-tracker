@@ -1,6 +1,6 @@
 // DEPENDENCIES
 import inquirer from "inquirer";
-import mysql from "mysql2";
+import mysql from "mysql2/promise";
 import cTable from "console.table";
 import {default as fs} from "fs";
 import connect from "./utils/connect.js";
@@ -111,30 +111,31 @@ function quit() {
 
 // View all departments
 async function viewDepartments() {
-  // stub
+  const queryString = "SELECT id AS 'ID', name AS 'Department Name' FROM department";
+  try {
+    const data = await connection.query(queryString);
+    console.table(data[0])
+    prompt();
+  } 
+  catch(err) {
+    throw err;
+  }
 
-  prompt();
 }
 
 // View all roles
 async function viewRoles() {
-  // stub
-
-  prompt();
+  
 }
 
 // View all employees
 async function viewEmployees() {
-  // stub
-
-  prompt();
+  
 }
 
 // View employees by department
 async function viewEmployeesByDept() {
-  // stub
-
-  prompt();
+  
 }
 
 // View employees by manager
