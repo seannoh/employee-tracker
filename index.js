@@ -139,7 +139,24 @@ async function viewRoles() {
 
 // View all employees
 async function viewEmployees() {
-  
+  const queryString = `SELECT e.id AS 'ID', 
+                       CONCAT(e.first_name,' ',e.last_name) AS 'Employee Name',  
+                       r.title AS 'Role', 
+                       d.name AS 'Department', 
+                       r.salary AS 'Salary', 
+                       IFNULL(CONCAT(m.first_name,' ',m.last_name),'No Manager') AS 'Manager'
+  FROM employee e 
+  LEFT JOIN employee m ON e.manager_id = m.id
+  JOIN role r ON e.role_id = r.id 
+  JOIN department d ON r.department_id = d.id`;
+  try {
+    const data = await connection.query(queryString);
+    console.table(data[0])
+    prompt();
+  } 
+  catch(err) {
+    throw err;
+  }
 }
 
 // View employees by department
