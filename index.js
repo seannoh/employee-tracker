@@ -7,8 +7,9 @@ import connect from "./utils/connect.js";
 
 // FUNCTION DEFINITIONS
 
-function init() {
-  //connect();
+async function init() {
+  await connect();
+  
   fs.readFile("./utils/welcomeASCII.txt","utf-8", (err, data) => {
     if(err) throw err;
     console.log(data);
