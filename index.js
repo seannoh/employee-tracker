@@ -161,7 +161,37 @@ async function viewEmployees() {
 
 // View employees by department
 async function viewEmployeesByDept() {
-  
+  try {
+    const deptQueryString = "SELECT * FROM department";
+    const deptData = await connection.query(deptQueryString);
+    const departmentsArray = deptData[0].map((dept) => {return {name: dept.name, value: dept.id}});
+    const {department_id} = await inquirer.prompt(
+      {
+        name: "department_id",
+        type: "list",
+        message: "Select a department:",
+        choices: departmentsArray
+      }
+    );
+    
+    const empQueryString = `SELECT e.id AS 'ID', 
+                         CONCAT(e.first_name,' ',e.last_name) AS 'Employee Name',  
+                         r.title AS 'Role', 
+                         d.name AS 'Department', 
+                         r.salary AS 'Salary', 
+                         IFNULL(CONCAT(m.first_name,' ',m.last_name),'No Manager') AS 'Manager'
+    FROM employee e 
+    LEFT JOIN employee m ON e.manager_id = m.id
+    JOIN role r ON e.role_id = r.id 
+    JOIN department d ON r.department_id = d.id
+    WHERE d.id = ?`;
+    const empData = await connection.query(empQueryString, department_id);
+    console.table(empData[0])
+    prompt();
+  } 
+  catch(err) {
+    throw err;
+  }
 }
 
 // View employees by manager
