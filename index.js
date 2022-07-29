@@ -4,7 +4,6 @@ import mysql from "mysql2/promise";
 import cTable from "console.table";
 import {default as fs} from "fs";
 import connect from "./utils/connect.js";
-import { table } from "console";
 
 // GLOBAL VARIABLES
 
