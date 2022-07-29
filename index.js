@@ -4,6 +4,7 @@ import mysql from "mysql2/promise";
 import cTable from "console.table";
 import {default as fs} from "fs";
 import connect from "./utils/connect.js";
+import { table } from "console";
 
 // GLOBAL VARIABLES
 
@@ -511,10 +512,16 @@ async function deleteEmployee() {
 // View department budget
 async function viewBudget() {
   try {
-    
+    const queryString = `SELECT d.id AS 'ID', d.name AS 'Department Name', SUM(r.salary) AS 'Budget' 
+                         FROM department d JOIN role r 
+                         ON r.department_id = d.id 
+                         GROUP BY d.id`;
+    const data = await connection.query(queryString);
+    console.table(data[0]);
+    prompt();
   }
   catch(err) {
-
+    throw err;
   }
 }
 
