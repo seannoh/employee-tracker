@@ -36,6 +36,8 @@ Follow the prompts in the application to use the content management system.
 
 ![preview](./assets/preview.gif)
 
+Link to walkthrough [video](https://drive.google.com/file/d/1lu4ilFY3d6OMG3-67O6s2Qhb3AMK2dZP/view?usp=sharing)
+
 ## Credits
 This application was built with the support of the resources and staff of the UCB Full Stack Full Time Coding Bootcamp Summer 2022. 
 
