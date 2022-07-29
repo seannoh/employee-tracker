@@ -482,16 +482,40 @@ async function deleteRole() {
 
 // Delete an employee
 async function deleteEmployee() {
-  // stub
+  try {
+    const empQueryString = "SELECT e.id, r.title, CONCAT(e.first_name,' ',e.last_name) AS name FROM employee e LEFT JOIN role r ON e.role_id = r.id";
+    const empData = await connection.query(empQueryString);
+    const empArray = empData[0].map((emp) => {return {name: `${emp.name} (${emp.title})`, value: emp.id}});
 
-  prompt();
+    const {emp_id} = await inquirer.prompt(
+      {
+        name: "emp_id",
+        type: "list",
+        message: "Please select an employee to remove:",
+        choices: empArray,
+        pageSize: 7,
+        loop: false
+      }
+    );
+
+    const deleteQueryString = "DELETE FROM employee WHERE id = ?";
+    const data = await connection.query(deleteQueryString, emp_id);
+    console.log("Employee has been removed");
+    prompt();
+  }
+  catch(err) {
+    throw err;
+  }
 }
 
 // View department budget
 async function viewBudget() {
-  // stub
+  try {
+    
+  }
+  catch(err) {
 
-  prompt();
+  }
 }
 
 
